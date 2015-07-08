@@ -1,0 +1,24 @@
+{
+    "name": "adnamsplc/verifone",
+    "description": "Library to authorise transactions against the Verifone payment gateway",
+    "keywords": ["payment", "gateway"],
+    "require": {
+        "zendframework/zend-soap": "2.2.*"
+    },
+    "authors": [
+        {
+            "name": "Chris Yallop",
+            "email": "chris.yallop@adnams.co.uk"
+            "homepage": "http://chrisyallop.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "autoload": {
+        "psr-0": {
+            "Verifone": "lib/"
+        }
+    }
+}
