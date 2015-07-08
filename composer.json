@@ -3,7 +3,9 @@
     "description": "Library to authorise transactions against the Verifone payment gateway",
     "keywords": ["payment", "gateway"],
     "require": {
-        "zendframework/zend-soap": "2.2.*"
+      "php": ">=5.3.3",
+
+      "zendframework/zend-soap": "2.2.*"
     },
     "authors": [
         {
@@ -13,9 +15,6 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {
-        "php": ">=5.3.3"
-    },
     "autoload": {
         "psr-0": {
             "Verifone": "lib/"
