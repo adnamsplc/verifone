@@ -235,6 +235,16 @@ class TransactionResponseMessage extends AbstractResponseMessage
     }
 
     /**
+     * Return the response time of this transaction.
+     *
+     * @return string
+     */
+    public function getResponseTime()
+    {
+        return (string) $this->getResponseMessage()->resultdatetimestring;
+    }
+
+    /**
      * Convert the response message to an array.
      *
      * @return array
