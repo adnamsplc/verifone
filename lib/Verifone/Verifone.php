@@ -10,7 +10,9 @@
 
 namespace Verifone;
 
-use Verifone\Exception\GeneralException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use Verifone\Request\RequestInterface;
 use Verifone\Request\TransactionConfirmationRequest;
 use Verifone\Request\TransactionRejectionRequest;
@@ -27,8 +29,10 @@ use Zend\Soap\Client;
  * @package    Verifone
  * @copyright  Copyright (c) 2014 Adnams Plc (http://adnams.co.uk)
  */
-class Verifone
+class Verifone implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /** @var Client */
     private $client;
 
@@ -109,26 +113,15 @@ class Verifone
             $ecomTrans
         );
 
-//        try {
-            $response = $this->send($transReq);
-//            echo $response->getDebugInfo() . PHP_EOL;
+        $response = $this->send($transReq);
 
-            // @todo This should probably be set on the property txnMsg then the client can call getTxnMsg()
-            // and still access the debug info.
-            $transactionResponseMessage = new TransactionResponseMessage($response->getMessageData());
-//            print_r($transactionResponseMessage);
-            return $transactionResponseMessage;
-//        } catch (GeneralException $exception) {
-//            echo "GeneralException caught" . PHP_EOL . PHP_EOL;
-//
-//            echo sprintf(
-//                "%d: %s\n\nLast Request: %s\nLast Request Headers: %s\n",
-//                $exception->getCode(),
-//                $exception->getMessage(),
-//                $exception->getLastRequest(),
-//                $exception->getLastRequestHeaders()
-//            );
-//        }
+        // @todo This should probably be set on the property txnMsg then the client can call getTxnMsg()
+        // and still access the debug info.
+        // e.g. $response->setTxnRespMsg(new TransactionResponseMessage($response->getMessageData());
+        // and then the client can call $response->getTxnMsg(); and still call $response->GetDebugInfo();
+        // or the response object just figures out the correct message to instantiate. Mmm, who's responsible for what??
+        // or the response message has the whole response object set for retrieval.
+        return new TransactionResponseMessage($response->getMessageData());
     }
 
     /**
@@ -149,7 +142,6 @@ class Verifone
         );
 
         $transactionConfirmationResponse = $this->send($transactionConfirmationRequest);
-        #echo $transactionConfirmationResponse->getDebugInfo() . PHP_EOL;
         return new TransactionResponseMessage($transactionConfirmationResponse->getMessageData());
     }
 
@@ -176,7 +168,6 @@ class Verifone
         );
 
         $transactionRejectionResponse = $this->send($transactionRejectionRequest);
-        #echo $transactionRejectionResponse->getDebugInfo() . PHP_EOL;
         return new TransactionResponseMessage($transactionRejectionResponse->getMessageData());
     }
 
@@ -188,10 +179,29 @@ class Verifone
      */
     protected function send(RequestInterface $request)
     {
-        $response = $this->client->ProcessMsg(
+        $rawResponse = $this->client->ProcessMsg(
             $request->getMessage()
         );
 
-        return new Response($response, $this->client);
+        $response = new Response($rawResponse, $this->client);
+
+        if (isset($this->logger) && $this->logger instanceof LoggerInterface) {
+            $this->logger->info(
+                $this->maskCreditCardNumber($response->getDebugInfo())
+            );
+        }
+
+        return $response;
+    }
+
+    /**
+     * Searches for and masks a credit card number in a string of text.
+     *
+     * @param string $string
+     * @return mixed
+     */
+    protected function maskCreditCardNumber($string)
+    {
+        return preg_replace('/(\d{6})(\d+)(\d{4})/', '$1****$3', $string);
     }
 }
