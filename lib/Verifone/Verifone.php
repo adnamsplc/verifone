@@ -92,9 +92,11 @@ class Verifone implements LoggerAwareInterface
      * @param string $expiryDate
      * @param float $txnAmount
      * @param string $merRef
+     * @param int $houseNumber
+     * @param string $postcode
      * @return TransactionResponseMessage
      */
-    public function authoriseTransaction($pan, $csc, $expiryDate, $txnAmount, $merRef = '')
+    public function authoriseTransaction($pan, $csc, $expiryDate, $txnAmount, $merRef = '', $houseNumber = null, $postcode = null)
     {
         $ecomTrans  = new EcommerceTransactionRequestMessage(
             $this->config['merchant']['accountId'],
@@ -105,6 +107,14 @@ class Verifone implements LoggerAwareInterface
             $txnAmount
         );
         $ecomTrans->setMerchantReference($merRef);
+
+        if (null !== $houseNumber) {
+            $ecomTrans->setAvsHouse($this->extractIntegersFromString($houseNumber));
+        }
+
+        if (null !== $postcode) {
+            $ecomTrans->setAvsPostcode($this->extractIntegersFromString($postcode));
+        }
 
         $transReq   = new TransactionRequest(
             $this->config['system']['systemId'],
@@ -203,5 +213,25 @@ class Verifone implements LoggerAwareInterface
     protected function maskCreditCardNumber($string)
     {
         return preg_replace('/(\d{6})(\d+)(\d{4})/', '$1****$3', $string);
+    }
+
+    /**
+     * Extracts the integers from a string.
+     *
+     * @param string $string
+     * @return int
+     */
+    protected function extractIntegersFromString($string)
+    {
+        $integers = [];
+
+        $stringLength = strlen($string);
+        for($i = 0; $i < $stringLength; $i++){
+            if (is_numeric($string[$i])) {
+                $integers[] = $string[$i];
+            }
+        }
+
+        return (int) implode('', $integers);
     }
 }

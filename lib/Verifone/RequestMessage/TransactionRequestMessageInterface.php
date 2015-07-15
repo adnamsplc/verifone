@@ -116,4 +116,34 @@ interface TransactionRequestMessageInterface
      * @return $this
      */
     public function setMerchantReference($merchantReference);
+
+    /**
+     * Get the AVS postcode value.
+     *
+     * @return int
+     */
+    public function getAvsPostcode();
+
+    /**
+     * Set the avsPostcode.
+     *
+     * @param int $avsPostcode
+     * @return $this
+     */
+    public function setAvsPostcode($avsPostcode);
+
+    /**
+     * Set the avsHouse.
+     *
+     * @param int $avsHouse
+     * @return $this
+     */
+    public function setAvsHouse($avsHouse);
+
+    /**
+     * Get the avsHouse.
+     *
+     * @return int
+     */
+    public function getAvsHouse();
 }

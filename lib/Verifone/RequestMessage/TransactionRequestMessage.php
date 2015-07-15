@@ -51,6 +51,12 @@ class TransactionRequestMessage implements TransactionRequestMessageInterface
     /** @var string */
     private $csc;
 
+    /** @var int Field checked by Address Verification System (AVS) if provided, numerics from house name\number. */
+    private $avsHouse;
+
+    /** @var int Field checked by Address Verification System (AVS) if provided, numerics from postcode only. */
+    private $avsPostcode;
+
     /** @var string The expiry date, format is YYMM. */
     private $expiryDate;
 
@@ -128,6 +134,50 @@ class TransactionRequestMessage implements TransactionRequestMessageInterface
     public function getCsc()
     {
         return $this->csc;
+    }
+
+    /**
+     * Get the AVS postcode value.
+     *
+     * @return int
+     */
+    public function getAvsPostcode()
+    {
+        return $this->avsPostcode;
+    }
+
+    /**
+     * Set the avsPostcode.
+     *
+     * @param int $avsPostcode
+     * @return $this
+     */
+    public function setAvsPostcode($avsPostcode)
+    {
+        $this->avsPostcode = (int)$avsPostcode;
+        return $this;
+    }
+
+    /**
+     * Set the avsHouse.
+     *
+     * @param int $avsHouse
+     * @return $this
+     */
+    public function setAvsHouse($avsHouse)
+    {
+        $this->avsHouse = (int)$avsHouse;
+        return $this;
+    }
+
+    /**
+     * Get the avsHouse.
+     *
+     * @return int
+     */
+    public function getAvsHouse()
+    {
+        return $this->avsHouse;
     }
 
     /**

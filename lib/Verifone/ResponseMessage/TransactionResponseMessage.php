@@ -18,6 +18,21 @@ namespace Verifone\ResponseMessage;
  */
 class TransactionResponseMessage extends AbstractResponseMessage
 {
+    const AUTH_VALUE_NOT_PROVIDED   = 0;
+    const AUTH_VALUE_NOT_CHECKED    = 1;
+    const AUTH_VALUE_MATCHED        = 2;
+    const AUTH_VALUE_NOT_MATCHED    = 4;
+    const AUTH_VALUE_PARTIAL_MATCH  = 8;
+
+    /** @var array */
+    private $authResultDescriptionMap = [
+        self::AUTH_VALUE_NOT_PROVIDED   => 'Not Provided',
+        self::AUTH_VALUE_NOT_CHECKED    => 'Not Checked',
+        self::AUTH_VALUE_MATCHED        => 'Matched',
+        self::AUTH_VALUE_NOT_MATCHED    => 'Not Matched',
+        self::AUTH_VALUE_PARTIAL_MATCH  => 'Partial Match',
+    ];
+
     /**
      * Checks for errors.
      */
@@ -44,6 +59,56 @@ class TransactionResponseMessage extends AbstractResponseMessage
     public function getCvcResult()
     {
         return $this->getResponseMessage()->cvcresult;
+    }
+
+    /**
+     * Get the CVC result description.
+     *
+     * @return int
+     */
+    public function getCvcResultDescription()
+    {
+        return $this->authResultDescriptionMap[(int) $this->getResponseMessage()->cvcresult];
+    }
+
+    /**
+     * Get the postcode result.
+     *
+     * @return int
+     */
+    public function getPostcodeResult()
+    {
+        return $this->getResponseMessage()->pcavsresult;
+    }
+
+    /**
+     * Get the postcode result description.
+     *
+     * @return int
+     */
+    public function getPostcodeResultDescription()
+    {
+        return $this->authResultDescriptionMap[(int) $this->getResponseMessage()->pcavsresult];
+    }
+
+    /**
+     * Get the house number result.
+     *
+     * @return int
+     */
+    public function getHouseNumberResult()
+    {
+        return $this->getResponseMessage()->ad1avsresult;
+    }
+
+    /**
+     * Get the house number result description.
+     *
+     * @return int
+     */
+    public function getHouseNumberResultDescription()
+    {
+        return $this->authResultDescriptionMap[(int) $this->getResponseMessage()->ad1avsresult];
     }
 
     /**
@@ -147,13 +212,113 @@ class TransactionResponseMessage extends AbstractResponseMessage
     }
 
     /**
+     * Was the postcode code submitted?
+     *
+     * @return bool
+     */
+    public function isPostcodeNotProvided()
+    {
+        return self::AUTH_VALUE_NOT_PROVIDED == $this->getPostcodeResult();
+    }
+
+    /**
+     * Was the postcode not checked?
+     *
+     * @return bool
+     */
+    public function isPostcodeNotChecked()
+    {
+        return self::AUTH_VALUE_NOT_CHECKED == $this->getPostcodeResult();
+    }
+
+    /**
+     * Is the postcode result a match?
+     *
+     * @return bool
+     */
+    public function isPostcodeMatched()
+    {
+        return self::AUTH_VALUE_MATCHED == $this->getPostcodeResult();
+    }
+
+    /**
+     * Is the postcode result a failed match?
+     *
+     * @return bool
+     */
+    public function isPostcodeNotMatched()
+    {
+        return self::AUTH_VALUE_NOT_MATCHED == $this->getPostcodeResult();
+    }
+
+    /**
+     * Is the postcode result a partial match?
+     *
+     * @return bool
+     */
+    public function isPostcodePartialMatched()
+    {
+        return self::AUTH_VALUE_PARTIAL_MATCH == $this->getPostcodeResult();
+    }
+
+    /**
+     * Was the house number code submitted?
+     *
+     * @return bool
+     */
+    public function isHouseNumberNotProvided()
+    {
+        return self::AUTH_VALUE_NOT_PROVIDED == $this->getHouseNumberResult();
+    }
+
+    /**
+     * Was the house number not checked?
+     *
+     * @return bool
+     */
+    public function isHouseNumberNotChecked()
+    {
+        return self::AUTH_VALUE_NOT_CHECKED == $this->getHouseNumberResult();
+    }
+
+    /**
+     * Is the house number result a match?
+     *
+     * @return bool
+     */
+    public function isHouseNumberMatched()
+    {
+        return self::AUTH_VALUE_MATCHED == $this->getHouseNumberResult();
+    }
+
+    /**
+     * Is the house number result a failed match?
+     *
+     * @return bool
+     */
+    public function isHouseNumberNotMatched()
+    {
+        return self::AUTH_VALUE_NOT_MATCHED == $this->getHouseNumberResult();
+    }
+
+    /**
+     * Is the house number result a partial match?
+     *
+     * @return bool
+     */
+    public function isHouseNumberPartialMatched()
+    {
+        return self::AUTH_VALUE_PARTIAL_MATCH == $this->getHouseNumberResult();
+    }
+
+    /**
      * Was the CVC code given?
      *
      * @return bool
      */
     public function isCvcNotProvided()
     {
-        return 0 == $this->getCvcResult();
+        return self::AUTH_VALUE_NOT_PROVIDED == $this->getCvcResult();
     }
 
     /**
@@ -163,7 +328,7 @@ class TransactionResponseMessage extends AbstractResponseMessage
      */
     public function isCvcNotChecked()
     {
-        return 1 == $this->getCvcResult();
+        return self::AUTH_VALUE_NOT_CHECKED == $this->getCvcResult();
     }
 
     /**
@@ -173,7 +338,7 @@ class TransactionResponseMessage extends AbstractResponseMessage
      */
     public function isCvcMatched()
     {
-        return 2 == $this->getCvcResult();
+        return self::AUTH_VALUE_MATCHED == $this->getCvcResult();
     }
 
     /**
@@ -183,7 +348,7 @@ class TransactionResponseMessage extends AbstractResponseMessage
      */
     public function isCvcNotMatched()
     {
-        return 4 == $this->getCvcResult();
+        return self::AUTH_VALUE_NOT_MATCHED == $this->getCvcResult();
     }
 
     /**

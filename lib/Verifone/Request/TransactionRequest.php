@@ -20,7 +20,7 @@ use Verifone\RequestMessage\TransactionRequestMessageInterface;
  */
 class TransactionRequest extends AbstractRequest
 {
-    /** @var Transaction */
+    /** @var TransactionRequestMessageInterface */
     private $transaction;
 
     /**
@@ -69,6 +69,8 @@ class TransactionRequest extends AbstractRequest
         $this->createAndAppendElement($transReq, 'processingidentifier', $this->transaction->getProcessingIdentifier()); // Auth and Charge
         $this->createAndAppendElement($transReq, 'pan', $this->transaction->getPan());
         $this->createAndAppendElement($transReq, 'csc', $this->transaction->getCsc());
+        $this->createAndAppendElement($transReq, 'avshouse', $this->transaction->getAvsHouse());
+        $this->createAndAppendElement($transReq, 'avspostcode', $this->transaction->getAvsPostcode());
         $this->createAndAppendElement($transReq, 'expirydate', $this->transaction->getExpiryDate());
         $this->createAndAppendElement($transReq, 'txnvalue', $this->transaction->getTxnValue());
 
