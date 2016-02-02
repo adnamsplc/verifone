@@ -15,7 +15,6 @@
             "homepage": "http://chrisyallop.com"
         }
     ],
-    "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
             "Verifone": "lib/"
